@@ -1,19 +1,39 @@
-// EditOrderModal.tsx
 import React, { useState, useEffect } from "react";
 import { OrderListDataType } from "../../types";
 
 type EditOrderModalProps = {
   order: OrderListDataType | null;
+  isOpen: boolean;
   onClose: () => void;
   onSave: (updated: OrderListDataType) => void;
 };
 
-const EditOrderModal: React.FC<EditOrderModalProps> = ({ order, onClose, onSave }) => {
-  const [editedOrder, setEditedOrder] = useState<OrderListDataType>({} as OrderListDataType);
+const initialFormState: OrderListDataType = {
+  order_id: "",
+  customer_name: "",
+  status: "Pending",
+  payment_method: "",
+  delivery_status: "",
+  product_number: 0,
+  price: 0,
+  order_date: new Date().toISOString().slice(0, 16), // 'yyyy-MM-ddTHH:mm'
+};
+
+const EditOrderModal: React.FC<EditOrderModalProps> = ({
+  order,
+  isOpen,
+  onClose,
+  onSave,
+}) => {
+  const [editedOrder, setEditedOrder] = useState<OrderListDataType>(initialFormState);
 
   useEffect(() => {
-    if (order) setEditedOrder(order);
-  }, [order]);
+    if (order) {
+      setEditedOrder(order);
+    } else {
+      setEditedOrder(initialFormState);
+    }
+  }, [order, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -21,48 +41,66 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ order, onClose, onSave 
   };
 
   const handleSave = () => {
-    if (!editedOrder?.order_id) {
-      alert("Order ID is missing.");
+    if (!editedOrder.customer_name || !editedOrder.payment_method || !editedOrder.delivery_status) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    onSave({
+    const formattedOrder = {
       ...editedOrder,
       order_id: editedOrder.order_id,
-      customer_name: editedOrder.customer_name || "",
-      status: editedOrder.status || "",
-      product_number: editedOrder.product_number || 0,
-      price: editedOrder.price || 0,
-      payment_method: editedOrder.payment_method || "",
-      delivery_status: editedOrder.delivery_status || "",
-      order_date: editedOrder.order_date || new Date().toISOString(),
-    });
+      customer_name: editedOrder.customer_name.trim(),
+      status: editedOrder.status,
+      payment_method: editedOrder.payment_method,
+      delivery_status: editedOrder.delivery_status,
+      product_number: Number(editedOrder.product_number),
+      price: Number(editedOrder.price),
+      order_date: editedOrder.order_date,
+    };
 
-    // ⛔ DO NOT CLOSE MODAL HERE — it's handled in the parent after successful save
+    onSave(formattedOrder);
   };
 
-  if (!order) return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Edit Order</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          {order ? "Edit Order" : "Create Order"}
+        </h2>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
-          <input
-            name="customer_name"
-            value={editedOrder.customer_name ?? ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-        </div>
+        {[
+          { label: "Customer Name", name: "customer_name", type: "text" },
+          { label: "Payment Method", name: "payment_method", type: "text" },
+          { label: "Delivery Status", name: "delivery_status", type: "text" },
+          { label: "Product Count", name: "product_number", type: "number" },
+          { label: "Price", name: "price", type: "number" },
+          { label: "Order Date", name: "order_date", type: "datetime-local" },
+        ].map((field) => (
+          <div className="mb-4" key={field.name}>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {field.label}
+            </label>
+            <input
+              type={field.type}
+              name={field.name}
+              value={
+                field.name === "order_date"
+                  ? editedOrder[field.name]?.toString().slice(0, 16) ?? ""
+                  : editedOrder[field.name] ?? ""
+              }
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
+        ))}
 
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <select
             name="status"
-            value={editedOrder.status ?? ""}
+            value={editedOrder.status ?? "Pending"}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md"
           >
@@ -70,59 +108,6 @@ const EditOrderModal: React.FC<EditOrderModalProps> = ({ order, onClose, onSave 
             <option value="Active">Active</option>
             <option value="Hold">Hold</option>
           </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-          <input
-            name="payment_method"
-            value={editedOrder.payment_method ?? ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Status</label>
-          <input
-            name="delivery_status"
-            value={editedOrder.delivery_status ?? ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Product Count</label>
-          <input
-            type="number"
-            name="product_number"
-            value={editedOrder.product_number ?? 0}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-          <input
-            type="number"
-            name="price"
-            value={editedOrder.price ?? 0}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Order Date</label>
-          <input
-            type="datetime-local"
-            name="order_date"
-            value={editedOrder.order_date?.toString().slice(0, 16) ?? ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-          />
         </div>
 
         <div className="flex justify-end gap-2">

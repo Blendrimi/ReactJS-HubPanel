@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../redux/store";
-import { setOrders, deleteOrder } from "../redux/features/ordersSlice";
+import { setOrders } from "../redux/features/ordersSlice";
 
 import TableHeader from "../components/header/table-header/TableHeader";
 import TableFilter2 from "../components/filter/TableFilter2";
@@ -23,17 +23,13 @@ const OrderListPage = () => {
   useEffect(() => {
     fetch("http://localhost:5054/api/order")
       .then((res) => res.json())
-      .then((data) => {
-        dispatch(setOrders(data));
-      })
+      .then((data) => dispatch(setOrders(data)))
       .catch((err) => console.error("Failed to fetch orders:", err));
   }, [dispatch]);
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`http://localhost:5054/api/order/${id}`, {
-        method: "DELETE",
-      });
+      await fetch(`http://localhost:5054/api/order/${id}`, { method: "DELETE" });
       const updatedOrders = orders.filter((order) => order.id !== id);
       dispatch(setOrders(updatedOrders));
     } catch (err) {
@@ -46,8 +42,14 @@ const OrderListPage = () => {
     setEditModalOpen(true);
   };
 
-const handleSaveOrder = async (updatedOrder: OrderListDataType) => {
-  try {
+  const handleCreateClick = () => {
+    setSelectedOrder(null); // triggers creation mode
+    setEditModalOpen(true);
+  };
+
+  const handleSaveOrder = async (updatedOrder: OrderListDataType) => {
+    const isEdit = !!updatedOrder.order_id;
+
     const payload = {
       id: updatedOrder.order_id,
       customer: updatedOrder.customer_name,
@@ -59,46 +61,52 @@ const handleSaveOrder = async (updatedOrder: OrderListDataType) => {
       date: updatedOrder.order_date,
     };
 
-    const response = await fetch(`http://localhost:5054/api/order/${updatedOrder.order_id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const url = isEdit
+        ? `http://localhost:5054/api/order/${updatedOrder.order_id}`
+        : `http://localhost:5054/api/order`;
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error("Update failed: " + JSON.stringify(errorData.errors));
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error((errorData.errors && JSON.stringify(errorData.errors)) || "Save failed");
+      }
+
+      const result = await response.json();
+
+      const updatedOrders = isEdit
+        ? orders.map((order) =>
+            order.id === result.id
+              ? {
+                  ...order,
+                  customer: result.customer,
+                  status: result.status,
+                  payment: result.payment,
+                  delivery: result.delivery,
+                  count: result.count,
+                  price: result.price,
+                  date: result.date,
+                }
+              : order
+          )
+        : [...orders, result];
+
+      dispatch(setOrders(updatedOrders));
+    } catch (err) {
+      console.error("Failed to save order:", err);
+      alert("Failed to save order: " + err);
+    } finally {
+      setEditModalOpen(false);
+      setSelectedOrder(null);
     }
-
-    const result = await response.json();
-
-    const updatedOrders = orders.map((order) =>
-      order.id === result.id
-        ? {
-            ...order,
-            customer: result.customer,
-            status: result.status,
-            payment: result.payment,
-            delivery: result.delivery,
-            count: result.count,
-            price: result.price,
-            date: result.date,
-          }
-        : order
-    );
-
-    dispatch(setOrders(updatedOrders));
-
-    // ✅ Close the modal AFTER successful save
-    setEditModalOpen(false);
-    setSelectedOrder(null);
-  } catch (err) {
-    console.error("Failed to update order:", err);
-    alert("Failed to update order: " + err);
-    setEditModalOpen(false); // Ensure modal closes even on error
-    setSelectedOrder(null);
-  }
-};
+  };
 
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
@@ -115,7 +123,6 @@ const handleSaveOrder = async (updatedOrder: OrderListDataType) => {
 
   const totalPages = Math.ceil(orders.length / dataPerPage);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
@@ -123,7 +130,16 @@ const handleSaveOrder = async (updatedOrder: OrderListDataType) => {
       <div className="row g-4">
         <div className="col-12">
           <div className="panel">
-            <TableHeader tableHeading="All Order" tableHeaderData={orderListHeaderData} />
+            <div className="flex justify-between items-center mb-4">
+              <TableHeader tableHeading="All Order" tableHeaderData={orderListHeaderData} />
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                onClick={handleCreateClick}
+              >
+                + Create Order
+              </button>
+            </div>
+
             <div className="panel-body">
               <TableFilter2 showMultipleAction showOrder showDatePicker />
               <OrderListTable

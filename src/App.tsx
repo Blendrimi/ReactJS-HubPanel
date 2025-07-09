@@ -9,6 +9,7 @@ import CompanyPage from "./pages/CompanyPage";
 import TaskPage from "./pages/TaskPage";
 import LeadsPage from "./pages/LeadsPage";
 import CustomerPage from "./pages/CustomerPage";
+import EditCustomerPage from "./pages/EditCustomerPage";
 import AddEmployeePage from "./pages/AddEmployeePage";
 import AllEmployeePage from "./pages/AllEmployeePage";
 import AttendancePage from "./pages/AttendancePage";
@@ -69,6 +70,7 @@ import FileManagerPage from "./pages/FileManagerPage";
 import DeliveryPage from "./pages/DeliveryPage";
 import IndexPage from "./pages/IndexPage";
 import LogisticPage from "./pages/LogisticPage";
+import CreateCustomerPage from "./pages/CreateCustomerPage";
 
 function App() {
   const activeLayout = useAppSelector((state) => state.layout.isLayout);
@@ -98,6 +100,9 @@ function App() {
             <Route path="/task" element={<TaskPage />} />
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/customer" element={<CustomerPage />} />
+            <Route path="/create-customer" element={<CreateCustomerPage />} />
+
+            <Route path="/edit-customer/:id" element={<EditCustomerPage />} />
             <Route path="/add-employee" element={<AddEmployeePage />} />
             <Route path="/all-employee" element={<AllEmployeePage />} />
             <Route path="/attendance" element={<AttendancePage />} />

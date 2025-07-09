@@ -2,9 +2,11 @@ import { AllCustomerDataType } from "../../types";
 
 type Props = {
   tableData: AllCustomerDataType[];
+  handleEdit: (customer: AllCustomerDataType) => void;
+  handleDelete: (id: string) => void;
 };
 
-const AllCustomerTable = ({ tableData }: Props) => {
+const AllCustomerTable = ({ tableData, handleEdit, handleDelete }: Props) => {
   return (
     <table
       className="table table-dashed table-hover digi-dataTable all-product-table"
@@ -33,6 +35,7 @@ const AllCustomerTable = ({ tableData }: Props) => {
           <th>City</th>
           <th>Region</th>
           <th>Postal Code</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -50,19 +53,39 @@ const AllCustomerTable = ({ tableData }: Props) => {
             <td>{item.lastActive}</td>
             <td>{item.dateRegistered}</td>
             <td>
-              <a href="#">{item.email}m</a>
+              <a href="#">{item.email}</a>
             </td>
             <td>{item.orders}</td>
-            <td>${item.totalSpent}</td>
-            <td>${item.aov}</td>
-            <td>BD</td>
+            <td>${Number(item.totalSpend).toFixed(2)}</td>
+            <td>${Number(item.aov || 0).toFixed(2)}</td>
+
+            <td>{item.country}</td>
             <td>{item.city}</td>
-            <td>CA</td>
+            <td>{item.region}</td>
             <td>{item.postalCode}</td>
+            <td>
+              <div className="btn-box d-flex justify-content-center gap-2">
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handleEdit(item)}
+                  title="Edit"
+                >
+                  <i className="fa-light fa-pen"></i>
+                </button>
+                <button
+                  className="btn btn-sm"
+                  onClick={() => handleDelete(item.id)}
+                  title="Delete"
+                >
+                  <i className="fa-light fa-trash"></i>
+                </button>
+              </div>
+            </td>
           </tr>
         ))}
       </tbody>
     </table>
   );
 };
+
 export default AllCustomerTable;
