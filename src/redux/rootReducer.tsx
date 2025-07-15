@@ -15,6 +15,7 @@ import uploadFileModalReducer from "./features/uploadFileModalSlice";
 import fileDetailModalReducer from "./features/fileDetailModalSlice";
 import ordersReducer from './features/ordersSlice';
 import customersReducer from './features/customersSlice';
+import vehiclesReducer from './features/vehiclesSlice';
 
 const rootReducer = combineReducers({
   theme: themeReducer,
@@ -31,7 +32,8 @@ const rootReducer = combineReducers({
   createFolderModal: createFolderModalReducer,
   fileDetailModal: fileDetailModalReducer,
   orders: ordersReducer,
-  customers: customersReducer
+  customers: customersReducer,
+  vehicles: vehiclesReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { TableHeaderDataType } from "../../../types";
 import { useAppDispatch } from "../../../redux/hooks";
@@ -70,14 +71,11 @@ const TableHeader = ({
             <i className="fa-regular fa-ellipsis-vertical"></i>
           </button>
 
-          <ul
-            className={`digi-dropdown-menu dropdown-menu ${
-              filterDropdown ? "show" : ""
-            }`}
-          >
+      <ul className={`digi-dropdown-menu dropdown-menu ${filterDropdown ? "show" : ""}`}>
+
             <li className="dropdown-title">Show Table Title</li>
             {tableHeaderData.map((item) => (
-              <li key={item.id}>
+              <li key={item.id || item.inputId}>
                 <div className="form-check">
                   <input
                     className="form-check-input"

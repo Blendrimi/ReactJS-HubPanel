@@ -1,3 +1,18 @@
+export type VehicleDataType = {
+  id: string;
+  plateNumber: string;
+  brand: string;
+  model: string;
+  year: string | number;
+  color: string;
+  type: string;
+  registrationDate: string;
+  owner: string;
+  email: string;
+  city: string;
+  region: string;
+  status: string;
+};
 export type AudienceDataType = {
   id: number;
   name: string;

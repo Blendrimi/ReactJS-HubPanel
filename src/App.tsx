@@ -71,6 +71,11 @@ import DeliveryPage from "./pages/DeliveryPage";
 import IndexPage from "./pages/IndexPage";
 import LogisticPage from "./pages/LogisticPage";
 import CreateCustomerPage from "./pages/CreateCustomerPage";
+import EditProductPage from "./pages/EditProductPage";
+import CreateProductPage from "./pages/CreateProductPage";
+import AllVehiclesPage from "./pages/AllVehiclesPage";
+import CreateVehiclePage from "./pages/CreateVehiclePage";
+import EditVehiclePage from "./pages/EditVehiclePage";
 
 function App() {
   const activeLayout = useAppSelector((state) => state.layout.isLayout);
@@ -107,7 +112,13 @@ function App() {
             <Route path="/all-employee" element={<AllEmployeePage />} />
             <Route path="/attendance" element={<AttendancePage />} />
             <Route path="/all-customer" element={<AllCustomerPage />} />
+            <Route path="/vehicle" element={<AllVehiclesPage />} />
+            <Route path="/create-vehicle" element={<CreateVehiclePage />} />
+            <Route path="/edit-vehicle/:id" element={<EditVehiclePage />} />
             <Route path="/add-product" element={<AddNewProductPage />} />
+            <Route path="/edit-product/:id" element={<EditProductPage />} />
+            <Route path="/create-product" element={<CreateProductPage />} />
+
             <Route path="/all-product" element={<AllProductPage />} />
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/order" element={<OrderListPage />} />

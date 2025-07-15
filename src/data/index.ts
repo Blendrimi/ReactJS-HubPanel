@@ -190,6 +190,10 @@ const navData = [
             subTitle: "Order",
             subUrl: "/order",
           },
+          {
+            subTitle: "All Vehicles",
+            subUrl: "/vehicle",
+          },
         ],
       },
       {

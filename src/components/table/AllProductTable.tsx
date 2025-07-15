@@ -1,9 +1,11 @@
+import { Link } from "react-router-dom";
 import { AllProductDataType } from "../../types";
 
 type Props = {
   tableData: AllProductDataType[];
   handleDelete: (id: number) => void;
 };
+
 const AllProductTable = ({ tableData, handleDelete }: Props) => {
   return (
     <table
@@ -42,13 +44,10 @@ const AllProductTable = ({ tableData, handleDelete }: Props) => {
             <td>
               <div className="table-product-card">
                 <div className="part-img">
-                  <img src={item.image} alt="Image" />
+                  <img src={item.imageUrl} alt="Product" />
                 </div>
                 <div className="part-txt">
-                  <span className="product-name">{item.product_name}</span>
-                  <span className="product-category">
-                    Category: {item.category}
-                  </span>
+                  <span className="product-name">{item.name}</span>
                 </div>
               </div>
             </td>
@@ -65,18 +64,18 @@ const AllProductTable = ({ tableData, handleDelete }: Props) => {
                   <i className="fa-sharp fa-solid fa-star starred"></i>
                   <i className="fa-sharp fa-solid fa-star"></i>
                 </div>
-                <div className="rating-amount mt-2">({item.rating})</div>
+                <div className="rating-amount mt-2">({item.ratingCount})</div>
               </div>
             </td>
-            <td>{item.published} 01:05 PM</td>
+            <td>{item.published}</td>
             <td>
               <div className="btn-box">
-                <button>
+                <Link to={`/view-product/${item.id}`}>
                   <i className="fa-light fa-eye"></i>
-                </button>
-                <button>
+                </Link>
+                <Link to={`/edit-product/${item.id}`}>
                   <i className="fa-light fa-pen"></i>
-                </button>
+                </Link>
                 <button onClick={() => handleDelete(item.id)}>
                   <i className="fa-light fa-trash"></i>
                 </button>
@@ -88,4 +87,5 @@ const AllProductTable = ({ tableData, handleDelete }: Props) => {
     </table>
   );
 };
+
 export default AllProductTable;
