@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { OrderListDataType } from "../../types";
 
 type Props = {
@@ -8,6 +8,10 @@ type Props = {
 };
 
 const OrderListTable = ({ tableData, handleDelete, handleEdit }: Props) => {
+  const navigate = useNavigate();
+  const handleDetails = (order: OrderListDataType) => {
+    navigate(`/order-details/${order.order_id}`);
+  };
   const getBadgeClass = (status: string) => {
     switch (status.toLowerCase()) {
       case "delivered":
@@ -81,11 +85,14 @@ const OrderListTable = ({ tableData, handleDelete, handleEdit }: Props) => {
             </td>
             <td>{item.order_date} - 01:05 PM</td>
             <td>
-              <div className="btn-box">
-                <button onClick={() => handleEdit(item)}>
+              <div className="btn-box flex gap-2">
+                <button type="button" onClick={() => handleDetails(item)}>
+                  <i className="fa-light fa-eye"></i>
+                </button>
+                <button type="button" onClick={() => handleEdit(item)}>
                   <i className="fa-light fa-pen"></i>
                 </button>
-                <button onClick={() => handleDelete(item.order_id)}>
+                <button type="button" onClick={() => handleDelete(item.order_id)}>
                   <i className="fa-light fa-trash"></i>
                 </button>
               </div>

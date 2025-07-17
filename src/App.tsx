@@ -71,6 +71,9 @@ import DeliveryPage from "./pages/DeliveryPage";
 import IndexPage from "./pages/IndexPage";
 import LogisticPage from "./pages/LogisticPage";
 import CreateCustomerPage from "./pages/CreateCustomerPage";
+import CreateOrderPage from "./pages/CreateOrderPage";
+import EditOrderPage from "./pages/EditOrderPage";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 import EditProductPage from "./pages/EditProductPage";
 import CreateProductPage from "./pages/CreateProductPage";
 import AllVehiclesPage from "./pages/AllVehiclesPage";
@@ -122,6 +125,9 @@ function App() {
             <Route path="/all-product" element={<AllProductPage />} />
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/order" element={<OrderListPage />} />
+            <Route path="/create-order" element={<CreateOrderPage />} />
+            <Route path="/edit-order/:id" element={<EditOrderPage />} />
+            <Route path="/order-details/:id" element={<OrderDetailsPage />} />
 
             <Route path="/calendar" element={<CalenderPage />} />
             <Route path="/chat" element={<ChatPage />} />

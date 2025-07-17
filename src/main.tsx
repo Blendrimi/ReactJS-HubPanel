@@ -19,6 +19,7 @@ import "./styles/fontawesome/all.min.css";
 import "./styles/fontawesome/sharp-solid.min.css";
 import "./styles/fontawesome/sharp-regular.min.css";
 import "./styles/scss/style.scss";
+import 'leaflet/dist/leaflet.css';
 import { ToastContainer } from "react-toastify";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

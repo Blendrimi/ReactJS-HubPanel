@@ -1,4 +1,6 @@
+
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../redux/store";
 import { setOrders } from "../redux/features/ordersSlice";
@@ -7,7 +9,6 @@ import TableHeader from "../components/header/table-header/TableHeader";
 import TableFilter2 from "../components/filter/TableFilter2";
 import OrderListTable from "../components/table/OrderListTable";
 import TableBottomControls from "../components/utils/TableBottomControls";
-import OrderEditModal from "../components/modal/OrderEditModal";
 
 import { orderListHeaderData } from "../data";
 import { OrderListDataType } from "../types";
@@ -17,8 +18,6 @@ const OrderListPage = () => {
   const orders = useSelector((state: RootState) => state.orders.orders);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderListDataType | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:5054/api/order")
@@ -37,14 +36,13 @@ const OrderListPage = () => {
     }
   };
 
+  const navigate = useNavigate();
   const handleEditClick = (order: OrderListDataType) => {
-    setSelectedOrder(order);
-    setEditModalOpen(true);
+    navigate(`/edit-order/${order.order_id}`);
   };
 
   const handleCreateClick = () => {
-    setSelectedOrder(null); // triggers creation mode
-    setEditModalOpen(true);
+    navigate("/create-order");
   };
 
   const handleSaveOrder = async (updatedOrder: OrderListDataType) => {
@@ -102,9 +100,6 @@ const OrderListPage = () => {
     } catch (err) {
       console.error("Failed to save order:", err);
       alert("Failed to save order: " + err);
-    } finally {
-      setEditModalOpen(false);
-      setSelectedOrder(null);
     }
   };
 
@@ -128,7 +123,7 @@ const OrderListPage = () => {
   return (
     <>
       <div className="row g-4">
-        <div className="col-12">
+        <div className="col-12" style={{ paddingTop: "12px" }}>
           <div className="panel">
             <div className="flex justify-between items-center mb-4">
               <TableHeader tableHeading="All Order" tableHeaderData={orderListHeaderData} />
@@ -160,13 +155,6 @@ const OrderListPage = () => {
           </div>
         </div>
       </div>
-
-      <OrderEditModal
-        isOpen={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        order={selectedOrder}
-        onSave={handleSaveOrder}
-      />
     </>
   );
 };
